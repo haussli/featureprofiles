@@ -145,8 +145,7 @@ func configureDUT(t *testing.T, dut *ondatra.DUTDevice) {
 
 // configureATE configures port1 and port2 on the ATE.
 func configureATE(t *testing.T, ate *ondatra.ATEDevice) gosnappi.Config {
-	otg := ate.OTG()
-	top := otg.NewConfig(t)
+	top := gosnappi.NewConfig()
 
 	top.Ports().Add().SetName(ate.Port(t, "port1").ID())
 	i1 := top.Devices().Add().SetName(ate.Port(t, "port1").ID())
@@ -154,7 +153,7 @@ func configureATE(t *testing.T, ate *ondatra.ATEDevice) gosnappi.Config {
 	eth1.Connection().SetChoice(gosnappi.EthernetConnectionChoice.PORT_NAME).SetPortName(i1.Name())
 	eth1.Ipv4Addresses().Add().SetName(ateSrc.Name + ".IPv4").
 		SetAddress(ateSrc.IPv4).SetGateway(dutSrc.IPv4).
-		SetPrefix(int32(ateSrc.IPv4Len))
+		SetPrefix(uint32(ateSrc.IPv4Len))
 
 	top.Ports().Add().SetName(ate.Port(t, "port2").ID())
 	i2 := top.Devices().Add().SetName(ate.Port(t, "port2").ID())
@@ -162,7 +161,7 @@ func configureATE(t *testing.T, ate *ondatra.ATEDevice) gosnappi.Config {
 	eth2.Connection().SetChoice(gosnappi.EthernetConnectionChoice.PORT_NAME).SetPortName(i2.Name())
 	eth2.Ipv4Addresses().Add().SetName(ateDst.Name + ".IPv4").
 		SetAddress(ateDst.IPv4).SetGateway(dutDst.IPv4).
-		SetPrefix(int32(ateDst.IPv4Len))
+		SetPrefix(uint32(ateDst.IPv4Len))
 
 	return top
 }
@@ -500,7 +499,7 @@ func TestOrderingACK(t *testing.T) {
 
 	// Dial gRIBI
 	ctx := context.Background()
-	gribic := dut.RawAPIs().GRIBI().Default(t)
+	gribic := dut.RawAPIs().GRIBI(t)
 
 	// Configure the ATE
 	ate := ondatra.ATE(t, "ate")
